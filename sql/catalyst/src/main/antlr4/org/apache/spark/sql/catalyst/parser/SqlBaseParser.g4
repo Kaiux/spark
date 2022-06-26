@@ -67,6 +67,7 @@ singleTableSchema
 
 statement
     : query                                                            #statementDefault
+    | SHOW VERSION                                                     #showVersion
     | ctes? dmlStatementNoWith                                         #dmlStatement
     | USE multipartIdentifier                                          #use
     | USE namespace multipartIdentifier                                #useNamespace

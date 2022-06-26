@@ -202,6 +202,13 @@ class SparkSqlAstBuilder extends AstBuilder {
   }
 
   /**
+   * Create a [[ShowVersionCommand]] logical plan.
+   */
+  override def visitShowVersion(ctx: ShowVersionContext): LogicalPlan = withOrigin(ctx) {
+    ShowVersionCommand
+  }
+
+  /**
    * Create an [[ExplainCommand]] logical plan.
    * The syntax of using this command in SQL is:
    * {{{
