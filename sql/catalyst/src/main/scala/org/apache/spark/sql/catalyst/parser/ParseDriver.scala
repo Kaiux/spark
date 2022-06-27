@@ -86,9 +86,16 @@ abstract class AbstractSqlParser extends ParserInterface with SQLConfHelper with
   }
 
   /** Creates LogicalPlan for a given SQL string. */
-  override def parsePlan(sqlText: String): LogicalPlan = parse(sqlText) { parser =>
+  override def parsePlan(sqlText: String): LogicalPlan = parse(sqlText) {
+    // 此处的parser: SqlBaseParser是parse方法带来的，其实这边是一个函数，传给parse
+    // 有点妙
+    parser =>
     val ctx = parser.singleStatement()
+    // withOrigin是记录了当前解析的内容
+    // 真正处理的逻辑还是大括号里面的内容
+    // 和上面的模式类似
     withOrigin(ctx, Some(sqlText)) {
+      // 从根节点开始解析语法树，并且转换成一颗逻辑计划树
       astBuilder.visitSingleStatement(ctx) match {
         case plan: LogicalPlan => plan
         case _ =>
@@ -104,12 +111,17 @@ abstract class AbstractSqlParser extends ParserInterface with SQLConfHelper with
   protected def parse[T](command: String)(toResult: SqlBaseParser => T): T = {
     logDebug(s"Parsing command: $command")
 
+    // 构造词法分析器
     val lexer = new SqlBaseLexer(new UpperCaseCharStream(CharStreams.fromString(command)))
     lexer.removeErrorListeners()
     lexer.addErrorListener(ParseErrorListener)
 
     val tokenStream = new CommonTokenStream(lexer)
+
+    // 构造语法分析器
     val parser = new SqlBaseParser(tokenStream)
+
+    // 配置语法解析器
     parser.addParseListener(PostProcessor)
     parser.addParseListener(UnclosedCommentProcessor(command, tokenStream))
     parser.removeErrorListeners()

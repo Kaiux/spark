@@ -54,6 +54,9 @@ import org.apache.spark.util.random.RandomSampler
 /**
  * The AstBuilder converts an ANTLR4 ParseTree into a catalyst Expression, LogicalPlan or
  * TableIdentifier.
+ *
+ * 继承自Antlr4生成的XXXBaseVisitor，可以用来遍历语法树
+ *
  */
 class AstBuilder extends SqlBaseParserBaseVisitor[AnyRef] with SQLConfHelper with Logging {
   import org.apache.spark.sql.connector.catalog.CatalogV2Implicits._
